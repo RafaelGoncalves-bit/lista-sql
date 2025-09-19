@@ -35,4 +35,38 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $cliente = $_GET['cliente'] ?? '';
  
 }
+
+$sql = "SELECT v.id, v.datemissao, c.nome
+FROM venda v
+join cliente c on v.idcliente = c.id
+where 1=1";
+
+if (!empty($codigo)) {
+    $sql .= " AND v.id = " . intval($codigo);
+}
+if (!empty($data)) {
+    $sql .= " AND v.datemissao = '". $data . "'";
+}
+if (!empty($cliente)){
+    $sql .= " AND c.nome LIKE '%". $cliente . "%'";
+}
+
+$stmt = $pdo->PREPARE($sql);
+$stmt = $pdo->query($sql);
+$resultado = $stmt->fetchAll();
+
+if (!empty($resultado)) {
+    echo "<div class='table-responsive mt-4'>";
+    echo "<table class='table table-bordered table-striped table-houver'>";
+    echo "<thead class='table-dark'><tr><th>Código</th><th>Data</th><th>Cliente</th></tr></thead><tbody>";
+    foreach ($resultado as $row){
+        echo "<tr><td>" .$row['id']."</td><td>".$row['datemissao']."</td><td>".$row['nome']."</td></tr>";
+    }
+    echo "</tbody></table></div>";
+} else {
+    echo "<p class='text-center text-danger mt-3'>Nenhuma venda encontrada.</p>";
+}
 ?>
+</div>
+</body>
+</html>
